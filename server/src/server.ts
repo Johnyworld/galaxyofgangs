@@ -1,11 +1,18 @@
 import * as socketio from 'socket.io';
+import Spacecraft from './classes/entities/Spacecraft';
+import State from './classes/states/State';
 
 class App {
   io: socketio.Server;
+  state: State;
   port: number;
   constructor() {
     this.port = 7000;
     console.log(`✅ Galaxy of Gangs server listening port ${this.port}`);
+
+    this.state = new State();
+
+    this.state.createNewChannel();
 
     this.io = new socketio.Server(this.port, {
       cors: {
@@ -21,8 +28,13 @@ class App {
   }
 
   sayHello(client: any, payload: any) {
-    console.log('Client says hello!', payload);
-    client.join('channel-01')
+    const newPlayer = new Spacecraft(payload.username);
+    const connectingChannel = this.state.channels[0].channel;
+    client.join(connectingChannel);
+    const channel = this.state.channels.find(ch => ch.channel === connectingChannel);
+    channel?.createNewSpacecraft(newPlayer);
+    console.log(`${payload.username} 유저가 ${connectingChannel} 채널에 입장했습니다.`, payload);
+    console.log(this.state.channels)
   }
 }
 

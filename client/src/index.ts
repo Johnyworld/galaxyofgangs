@@ -12,7 +12,7 @@ class Socket {
 
   hello() {
     this.socket.emit('hello', {
-      name: 'Johny Kim',
+      username: 'Johny Kim',
     })
   }
 }
