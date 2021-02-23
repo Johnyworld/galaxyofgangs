@@ -1,17 +1,29 @@
 import * as socketio from 'socket.io';
 
-const io = new socketio.Server(7000, {
-  cors: {
-    origin: "http://127.0.0.1:5000",
-    methods: ["GET", "POST"]
+class App {
+  io: socketio.Server;
+  port: number;
+  constructor() {
+    this.port = 7000;
+    console.log(`✅ Galaxy of Gangs server listening port ${this.port}`);
+
+    this.io = new socketio.Server(this.port, {
+      cors: {
+        origin: "http://127.0.0.1:5000",
+        methods: ["GET", "POST"]
+      }
+    }) 
+
+    this.io.on('connection', client => {
+      console.log(`User connected id: ${client.id}`);
+      client.on('hello', (payload:any) => this.sayHello(client, payload));
+    });
   }
-});
 
-io.on('connection', client => {
-  console.log('Connected!');
-  client.on('hello', () => {
-    console.log('Client says hello!')
-  })
-});
+  sayHello(client: any, payload: any) {
+    console.log('Client says hello!', payload);
+    client.join('channel-01')
+  }
+}
 
-console.log('Galaxy of Gangs!');
+new App();

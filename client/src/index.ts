@@ -1,6 +1,3 @@
-let title = <HTMLElement> document.getElementById('title');
-title.style.color = 'violet';
-title.innerText = 'Hello Galaxy!'
 
 class Socket {
   socket: SocketIOClient.Socket;
@@ -14,9 +11,9 @@ class Socket {
   }
 
   hello() {
-    this.socket.emit('hello', () => {
-      console.log('connection?')
-    });
+    this.socket.emit('hello', {
+      name: 'Johny Kim',
+    })
   }
 }
 
@@ -30,11 +27,21 @@ class App {
     this.socket.hello();
     this.canvas = <HTMLCanvasElement> document.getElementById('canvas');
     this.ctx = <CanvasRenderingContext2D> this.canvas.getContext('2d');
-    this.ctx.fillStyle = 'red';
-    this.ctx.fillRect(50, 50, 50, 50);
+
+    this.resize();
+
+    window.addEventListener('resize', this.resize.bind(this));
   }
 
-  draw() {
+  resize() {
+    this.canvas.width = document.body.clientWidth;
+    this.canvas.height = document.body.clientHeight;
+    this.update();
+  }
+
+  update() {
+    this.ctx.fillStyle = 'red';
+    this.ctx.fillRect(50, 50, 50, 50);
   }
 }
 
