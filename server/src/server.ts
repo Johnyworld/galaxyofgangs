@@ -2,10 +2,13 @@ import * as socketio from 'socket.io';
 import Spacecraft from './classes/entities/Spacecraft';
 import State from './classes/states/State';
 
+const FRAME_RATE = 30;
+
 class App {
   io: socketio.Server;
   state: State;
   port: number;
+  gameInterval:NodeJS.Timeout;
   constructor() {
     this.port = 7000;
     console.log(`✅ Galaxy of Gangs server listening port ${this.port}`);
@@ -25,6 +28,12 @@ class App {
       console.log(`User connected id: ${client.id}`);
       client.on('hello', (payload:any) => this.sayHello(client, payload));
     });
+
+    this.gameInterval = setInterval(() => {
+      for ( const channel of this.state.channels ) {
+        this.io.in(channel.channel.toString()).emit('gameState', channel);
+      }
+    }, 1000 / FRAME_RATE);
   }
 
   sayHello(client: any, payload: any) {
@@ -33,7 +42,7 @@ class App {
     client.join(connectingChannel);
     const channel = this.state.channels.find(ch => ch.channel === connectingChannel);
     channel?.createNewSpacecraft(newPlayer);
-    console.log(`${payload.username} 유저가 ${connectingChannel} 채널에 입장했습니다.`, payload);
+    console.log(`${payload.username}(${client.id}) 유저가 ${connectingChannel} 채널에 입장했습니다.`, payload);
     console.log(this.state.channels)
   }
 }

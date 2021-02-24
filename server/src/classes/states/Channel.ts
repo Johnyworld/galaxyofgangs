@@ -1,14 +1,14 @@
 import Spacecraft from "../entities/Spacecraft";
 
-const channelGernerator: (channels: Channel[]) => number = (channels) => {
-  const newChannel = Math.floor(Math.random() * 10000);
+const channelGernerator: (channels: Channel[]) => string = (channels) => {
+  const newChannel = Math.floor(Math.random() * 10000).toString();
   const isExists = channels.find(ch => ch.channel === newChannel);
   if (isExists) return channelGernerator(channels);
   else return newChannel;
 }
 
 export default class Channel {
-  channel: number;
+  channel: string;
   spacecrafts: Spacecraft[];
 
   constructor(channels: Channel[]) {
@@ -17,6 +17,7 @@ export default class Channel {
   }
 
   createNewSpacecraft(spacecraft: Spacecraft) {
-    this.spacecrafts.push(spacecraft);
+    const isExists = this.spacecrafts.find(s=> s.username === spacecraft.username);
+    if ( !isExists ) this.spacecrafts.push(spacecraft);
   }
 }
