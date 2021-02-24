@@ -1,3 +1,4 @@
+import { State } from 'state';
 
 class Socket {
   socket: SocketIOClient.Socket;
@@ -14,9 +15,22 @@ class Socket {
     this.socket.on(event, fn);
   }
 
-  hello() {
-    this.socket.emit('hello', {
-      username: 'Johny Kim',
+  emit(event: string, payload: any) {
+    this.socket.emit(event, payload);
+  }
+}
+
+
+class KeyEvent {
+  constructor(username: string, socket: Socket) {
+    ['keydown', 'keyup'].forEach(eventName => {
+      window.addEventListener(eventName, (e:any) => {
+        if ( ['KeyA', 'KeyS', 'KeyD', 'KeyW', 'Space'].includes(e.code) ) {
+          e.preventDefault();
+          console.log(e.code);
+          socket.emit('keyevent', { username, eventName, code: e.code });
+        }
+      })
     })
   }
 }
@@ -24,17 +38,24 @@ class Socket {
 
 class App {
   socket: Socket;
+  keyEvent: KeyEvent;
+  state: State;
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   constructor() {
     this.socket = new Socket();
-    this.socket.hello();
+    this.state = {
+      spacecrafts: [],
+    };
+    this.socket.emit('hello', { username: 'Johny Kim' });
+    this.keyEvent = new KeyEvent('Johny Kim', this.socket);
+
     this.canvas = <HTMLCanvasElement> document.getElementById('canvas');
     this.ctx = <CanvasRenderingContext2D> this.canvas.getContext('2d');
 
     this.resize();
 
-    this.socket.on('gameState', (state: any) => this.update(state));
+    this.socket.on('gameState', (state: State) => this.update(state));
 
     window.addEventListener('resize', this.resize.bind(this));
   }
@@ -44,10 +65,12 @@ class App {
     this.canvas.height = document.body.clientHeight;
   }
 
-  update(state: any) {
-    console.log('state', state);
+  update(state: State) {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.ctx.fillStyle = 'red';
-    this.ctx.fillRect(50, 50, 50, 50);
+    for ( const ship of state.spacecrafts ) {
+      this.ctx.fillRect(ship.pos.x, ship.pos.y, 50, 50);
+    }
   }
 }
 

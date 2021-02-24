@@ -27,13 +27,28 @@ class App {
     this.io.on('connection', client => {
       console.log(`User connected id: ${client.id}`);
       client.on('hello', (payload:any) => this.sayHello(client, payload));
+      client.on('keyevent', (payload: any) => this.keyEvent(client, payload));
     });
 
     this.gameInterval = setInterval(() => {
       for ( const channel of this.state.channels ) {
+        for ( const ship of channel.spacecrafts ) {
+          ship.update();
+        }
         this.io.in(channel.channel.toString()).emit('gameState', channel);
       }
     }, 1000 / FRAME_RATE);
+  }
+
+  keyEvent(client: any, payload: any) {
+    const target = this.state.channels[0].spacecrafts.find(ship=> ship.username === payload.username);
+    console.log(target);
+    if ( payload.eventName === 'keyup' ) {
+      if ( payload.code === 'KeyW' ) target?.accelate(0, -1);
+      if ( payload.code === 'KeyS' ) target?.accelate(0, 1);
+      if ( payload.code === 'KeyA' ) target?.accelate(-1, 0);
+      if ( payload.code === 'KeyD' ) target?.accelate(1, 0);
+    }
   }
 
   sayHello(client: any, payload: any) {
