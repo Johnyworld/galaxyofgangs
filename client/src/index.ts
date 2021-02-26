@@ -81,8 +81,15 @@ class App {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       this.ctx.fillStyle = 'red';
       for ( const ship of state.spacecrafts ) {
+        const centerX = ship.pos.x + ship.size.x / 2;
+        const centerY = ship.pos.y + ship.size.y / 2;
         // this.ctx.fillRect(ship.pos.x, ship.pos.y, 50, 50);
-        this.ctx.drawImage(this.image, 0, 0, 96, 96, ship.pos.x, ship.pos.y, 48, 48);
+        this.ctx.save();
+        this.ctx.translate(centerX, centerY);
+        this.ctx.rotate(ship.dir * Math.PI / 180);
+        this.ctx.translate(-centerX, -centerY);
+        this.ctx.drawImage(this.image, 0, 0, 96, 96, ship.pos.x, ship.pos.y, ship.size.x, ship.size.y);
+        this.ctx.restore();
       }
     }
   }

@@ -15,8 +15,10 @@ declare module 'state' {
 
   interface Spacecraft {
     username: string;
+    size: Vec2;
     pos: Vec2;
     vel: Vec2;
+    dir: number;
     status: Status;
   }
 

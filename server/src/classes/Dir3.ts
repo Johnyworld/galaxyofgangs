@@ -1,10 +1,8 @@
 export default class Dir3 {
-  left: number;
-  right: number;
   drive: number;
-  constructor(left: number, right: number, drive: number) {
-    this.left = left;
-    this.right = right;
+  turn: number;
+  constructor(drive: number, turn: number) {
     this.drive = drive;
+    this.turn = turn;
   }
 }

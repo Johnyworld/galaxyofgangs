@@ -8,29 +8,25 @@ interface Status {
   fuelMax: number;
 }
 
-interface Speed {
-  drive: number;
-  turn: number;
-}
-
 export default class Spacecraft {
   username: string;
+  size: Vec2;
   pos: Vec2;
   vel: Dir3;
   acc: Dir3;
+  speed: Dir3;
   moving: Dir3;
+  dir: number;
   status: Status;
-  speed: Speed;
   constructor(username: string) {
     this.username = username;
-    this.pos = { x: 200, y: 500 };
-    this.vel = { left: 0, right: 0, drive: 0 };
-    this.acc = { left: 0, right: 0, drive: 0.1 };
-    this.moving = { left: 0, right: 0, drive: 0 }
-    this.speed = {
-      drive: 10,
-      turn: 10,
-    }
+    this.size = new Vec2(48, 48);
+    this.pos = new Vec2(200, 500);
+    this.vel = new Dir3(0, 0);
+    this.acc =  new Dir3(0.1, 0.01);
+    this.speed = new Dir3(10, 1);
+    this.moving =  new Dir3(0, 0);
+    this.dir = 0;
     this.status = {
       hp: 100,
       hpMax: 100,
@@ -43,12 +39,7 @@ export default class Spacecraft {
     this.moving.drive = press;
   }
 
-  turn() {
-
-  }
-
-  update() {
-
+  accelating() {
     if ( this.moving.drive === 1 ) {
       if ( this.vel.drive < this.speed.drive ) {
         this.vel.drive += this.acc.drive;
@@ -64,9 +55,46 @@ export default class Spacecraft {
     } else {
 
     }
+  }
+
+  turn(press: number) {
+    this.moving.turn = press;
+  }
+
+  turning() {
+    if ( this.moving.turn === 1 ) {
+      if ( this.vel.turn < this.speed.turn ) {
+        this.vel.turn += this.acc.turn;
+      } else {
+        this.vel.turn = this.speed.turn;
+      }
+    } else if ( this.moving.turn === -1 ) {
+      if ( this.vel.turn > -this.speed.turn ) {
+        this.vel.turn -= this.acc.turn;
+      } else {
+        this.vel.turn = -this.speed.turn;
+      }
+    } else {
+
+    } 
+  }
+
+  update() {
+
+    this.accelating();
+    this.turning();
 
     this.pos.y -= this.vel.drive;
+    this.dir += this.vel.turn;
 
-    console.log(this.vel.drive);
+    if ( this.dir < 0 ) {
+      this.dir += 360;
+    }
+
+    if ( this.dir > 360 ) {
+      this.dir -= 360;
+    }
+
+    console.log(this.vel.drive, this.vel.turn, this.dir);
   }
 }

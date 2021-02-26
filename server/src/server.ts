@@ -46,13 +46,15 @@ class App {
     if ( payload.eventName === 'keydown' ) {
       if ( payload.code === 'KeyW' ) target?.accelate(1);
       if ( payload.code === 'KeyS' ) target?.accelate(-1);
-      // if ( payload.code === 'KeyA' ) target?.accelate(1);
-      // if ( payload.code === 'KeyD' ) target?.accelate(1);
+      if ( payload.code === 'KeyA' ) target?.turn(-1);
+      if ( payload.code === 'KeyD' ) target?.turn(1);
     }
 
     if ( payload.eventName === 'keyup' ) {
       if ( payload.code === 'KeyW' ) target?.accelate(0);
       if ( payload.code === 'KeyS' ) target?.accelate(0);
+      if ( payload.code === 'KeyA' ) target?.turn(0);
+      if ( payload.code === 'KeyD' ) target?.turn(0);
     }
   }
 
