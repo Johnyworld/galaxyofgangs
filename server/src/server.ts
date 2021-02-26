@@ -42,12 +42,17 @@ class App {
 
   keyEvent(client: any, payload: any) {
     const target = this.state.channels[0].spacecrafts.find(ship=> ship.username === payload.username);
-    console.log(target);
+
+    if ( payload.eventName === 'keydown' ) {
+      if ( payload.code === 'KeyW' ) target?.accelate(1);
+      if ( payload.code === 'KeyS' ) target?.accelate(-1);
+      // if ( payload.code === 'KeyA' ) target?.accelate(1);
+      // if ( payload.code === 'KeyD' ) target?.accelate(1);
+    }
+
     if ( payload.eventName === 'keyup' ) {
-      if ( payload.code === 'KeyW' ) target?.accelate(0, -1);
-      if ( payload.code === 'KeyS' ) target?.accelate(0, 1);
-      if ( payload.code === 'KeyA' ) target?.accelate(-1, 0);
-      if ( payload.code === 'KeyD' ) target?.accelate(1, 0);
+      if ( payload.code === 'KeyW' ) target?.accelate(0);
+      if ( payload.code === 'KeyS' ) target?.accelate(0);
     }
   }
 
