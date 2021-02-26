@@ -42,8 +42,12 @@ class App {
   state: State;
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
+  image: HTMLImageElement;
+  isLoaded: boolean;
   constructor() {
     this.socket = new Socket();
+    this.isLoaded = false;
+
     this.state = {
       spacecrafts: [],
     };
@@ -52,10 +56,17 @@ class App {
 
     this.canvas = <HTMLCanvasElement> document.getElementById('canvas');
     this.ctx = <CanvasRenderingContext2D> this.canvas.getContext('2d');
+    this.ctx.imageSmoothingEnabled = false;
 
     this.resize();
 
     this.socket.on('gameState', (state: State) => this.update(state));
+
+    this.image = new Image();
+    this.image.onload = () => {
+      this.isLoaded = true;
+    }
+    this.image.src = '/assets/spacecraft.png';
 
     window.addEventListener('resize', this.resize.bind(this));
   }
@@ -66,10 +77,13 @@ class App {
   }
 
   update(state: State) {
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.fillStyle = 'red';
-    for ( const ship of state.spacecrafts ) {
-      this.ctx.fillRect(ship.pos.x, ship.pos.y, 50, 50);
+    if ( this.isLoaded ) {
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.ctx.fillStyle = 'red';
+      for ( const ship of state.spacecrafts ) {
+        // this.ctx.fillRect(ship.pos.x, ship.pos.y, 50, 50);
+        this.ctx.drawImage(this.image, 0, 0, 96, 96, ship.pos.x, ship.pos.y, 48, 48);
+      }
     }
   }
 }
