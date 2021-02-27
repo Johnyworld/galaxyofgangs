@@ -1,4 +1,5 @@
 import { timeStamp } from "console";
+import { getLocationFromRangeAndAngle } from "../../utils/trigonometric";
 import Dir3 from "../Dir3";
 import Vec2 from "../Vec2";
 import Cannon from "./patials/Cannon";
@@ -140,12 +141,10 @@ export default class Spacecraft {
       this.dir -= 360;
     }
 
-    const degPi = this.dir * (Math.PI / 180);
-    const b = (this.vel.drive / 2) * Math.cos(degPi);
-    const c = (this.vel.drive / 2) * Math.sin(degPi);
+    const location = getLocationFromRangeAndAngle(this.dir, this.vel.drive);
 
-    this.pos.y -= b;
-    this.pos.x += c;
+    this.pos.x += location.x;
+    this.pos.y += location.y;
 
     this.cannon.update(this.pos.x, this.pos.y);
 
