@@ -24,8 +24,8 @@ export default class Spacecraft {
     this.size = new Vec2(48, 48);
     this.pos = new Vec2(200, 500);
     this.vel = new Dir3(0, 0);
-    this.acc =  new Dir3(0.1, 0.01);
-    this.speed = new Dir3(10, 1);
+    this.acc =  new Dir3(0.1, 0.1);
+    this.speed = new Dir3(10, 10);
     this.moving = new Dir3(0, 0);
     this.movingDir = new Dir3(0, 0);
     this.dir = 0;
@@ -76,8 +76,6 @@ export default class Spacecraft {
           this.vel.drive = -this.speed.drive;
         }
       }
-    } else {
-
     }
   }
 
@@ -120,9 +118,7 @@ export default class Spacecraft {
           this.vel.turn = -this.speed.turn;
         }
       }
-    } else {
-
-    } 
+    }
   }
 
   update() {
@@ -130,8 +126,7 @@ export default class Spacecraft {
     this.accelating();
     this.turning();
 
-    this.pos.y -= this.vel.drive;
-    this.dir += this.vel.turn;
+    this.dir += this.vel.turn / 8;
 
     if ( this.dir < 0 ) {
       this.dir += 360;
@@ -141,6 +136,13 @@ export default class Spacecraft {
       this.dir -= 360;
     }
 
-    console.log(this.movingDir.drive, this.vel.drive);
+    const degPi = this.dir * (Math.PI / 180);
+    const b = (this.vel.drive / 2) * Math.cos(degPi);
+    const c = (this.vel.drive / 2) * Math.sin(degPi);
+
+    this.pos.y -= b;
+    this.pos.x += c;
+
+    console.log(`속도: ${Math.round(this.vel.drive)}, 선회: ${Math.round(this.vel.turn)}, 방향: ${Math.round(this.dir)}`)
   }
 }
