@@ -13,6 +13,12 @@ declare module 'state' {
     fuelMax: number;
   }
 
+  interface Cannon {
+    dir: number;
+    size: Vec2;
+    pos: Vec2;
+  }
+
   interface Spacecraft {
     username: string;
     size: Vec2;
@@ -20,6 +26,7 @@ declare module 'state' {
     vel: Vec2;
     dir: number;
     status: Status;
+    cannon: Cannon;
   }
 
   export interface State {

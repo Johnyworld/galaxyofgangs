@@ -28,8 +28,19 @@ class KeyEvent {
         if ( ['KeyA', 'KeyS', 'KeyD', 'KeyW', 'Space'].includes(e.code) ) {
           e.preventDefault();
           console.log(e.code);
-          socket.emit('keyevent', { username, eventName, code: e.code });
+          socket.emit('keyEvent', { username, eventName, code: e.code });
         }
+      })
+    })
+  }
+}
+
+
+class MouseEvent {
+  constructor(username: string, socket: Socket) {
+    ['mousemove'].forEach(eventName => {
+      window.addEventListener(eventName, (e: any) => {
+        socket.emit('mouseEvent', { username, eventName, mouse: { x: e.clientX, y: e.clientY }});
       })
     })
   }
@@ -39,6 +50,7 @@ class KeyEvent {
 class App {
   socket: Socket;
   keyEvent: KeyEvent;
+  mouseEvent: MouseEvent;
   state: State;
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
@@ -53,6 +65,7 @@ class App {
     };
     this.socket.emit('hello', { username: 'Johny Kim' });
     this.keyEvent = new KeyEvent('Johny Kim', this.socket);
+    this.mouseEvent = new MouseEvent('Johny Kim', this.socket);
 
     this.canvas = <HTMLCanvasElement> document.getElementById('canvas');
     this.ctx = <CanvasRenderingContext2D> this.canvas.getContext('2d');
@@ -89,6 +102,13 @@ class App {
         this.ctx.rotate(ship.dir * Math.PI / 180);
         this.ctx.translate(-centerX, -centerY);
         this.ctx.drawImage(this.image, 0, 0, 96, 96, ship.pos.x, ship.pos.y, ship.size.x, ship.size.y);
+        this.ctx.restore();
+
+        this.ctx.save();
+        this.ctx.translate(centerX, centerY);
+        this.ctx.rotate(ship.cannon.dir * Math.PI / 180);
+        this.ctx.translate(-centerX, -centerY);
+        this.ctx.drawImage(this.image, 96, 0, 96, 96, ship.cannon.pos.x, ship.cannon.pos.y, ship.cannon.size.x, ship.cannon.size.y);
         this.ctx.restore();
       }
     }

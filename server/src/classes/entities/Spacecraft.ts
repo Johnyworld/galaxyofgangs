@@ -1,5 +1,7 @@
+import { timeStamp } from "console";
 import Dir3 from "../Dir3";
 import Vec2 from "../Vec2";
+import Cannon from "./patials/Cannon";
 
 interface Status {
   hp: number;
@@ -19,9 +21,10 @@ export default class Spacecraft {
   movingDir: Dir3;
   dir: number;
   status: Status;
+  cannon: Cannon;
   constructor(username: string) {
     this.username = username;
-    this.size = new Vec2(48, 48);
+    this.size = new Vec2(96, 96);
     this.pos = new Vec2(200, 500);
     this.vel = new Dir3(0, 0);
     this.acc =  new Dir3(0.1, 0.1);
@@ -29,6 +32,7 @@ export default class Spacecraft {
     this.moving = new Dir3(0, 0);
     this.movingDir = new Dir3(0, 0);
     this.dir = 0;
+    this.cannon = new Cannon(this.pos.x, this.pos.y);
     this.status = {
       hp: 100,
       hpMax: 100,
@@ -143,6 +147,8 @@ export default class Spacecraft {
     this.pos.y -= b;
     this.pos.x += c;
 
-    console.log(`속도: ${Math.round(this.vel.drive)}, 선회: ${Math.round(this.vel.turn)}, 방향: ${Math.round(this.dir)}`)
+    this.cannon.update(this.pos.x, this.pos.y);
+
+    // console.log(`속도: ${Math.round(this.vel.drive)}, 선회: ${Math.round(this.vel.turn)}, 방향: ${Math.round(this.dir)}`)
   }
 }

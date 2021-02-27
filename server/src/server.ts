@@ -27,7 +27,8 @@ class App {
     this.io.on('connection', client => {
       console.log(`User connected id: ${client.id}`);
       client.on('hello', (payload:any) => this.sayHello(client, payload));
-      client.on('keyevent', (payload: any) => this.keyEvent(client, payload));
+      client.on('keyEvent', (payload: any) => this.keyEvent(client, payload));
+      client.on('mouseEvent', (payload: any) => this.mouseEvent(client, payload));
     });
 
     this.gameInterval = setInterval(() => {
@@ -55,6 +56,14 @@ class App {
       if ( payload.code === 'KeyS' ) target?.accelate(0);
       if ( payload.code === 'KeyA' ) target?.turn(0);
       if ( payload.code === 'KeyD' ) target?.turn(0);
+    }
+  }
+
+  mouseEvent(client: any, payload: any) {
+    const target = this.state.channels[0].spacecrafts.find(ship=> ship.username === payload.username);
+
+    if ( payload.eventName === 'mousemove' ) {
+      target?.cannon.turn(payload.mouse.x, payload.mouse.y);
     }
   }
 
