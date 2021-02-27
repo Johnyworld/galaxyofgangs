@@ -16,6 +16,7 @@ export default class Spacecraft {
   acc: Dir3;
   speed: Dir3;
   moving: Dir3;
+  movingDir: Dir3;
   dir: number;
   status: Status;
   constructor(username: string) {
@@ -25,7 +26,8 @@ export default class Spacecraft {
     this.vel = new Dir3(0, 0);
     this.acc =  new Dir3(0.1, 0.01);
     this.speed = new Dir3(10, 1);
-    this.moving =  new Dir3(0, 0);
+    this.moving = new Dir3(0, 0);
+    this.movingDir = new Dir3(0, 0);
     this.dir = 0;
     this.status = {
       hp: 100,
@@ -36,21 +38,43 @@ export default class Spacecraft {
   }
 
   accelate(press: number) {
+    if ( press === 0 ) {
+      if ( this.vel.drive > 0 ) this.movingDir.drive = 1;
+      else if ( this.vel.drive < 0 ) this.movingDir.drive = -1;
+      else this.movingDir.drive = 0;
+    }
     this.moving.drive = press;
   }
 
   accelating() {
     if ( this.moving.drive === 1 ) {
-      if ( this.vel.drive < this.speed.drive ) {
-        this.vel.drive += this.acc.drive;
+      if ( this.movingDir.drive === -1 ) {
+        if ( this.vel.drive < 0 ) {
+          this.vel.drive += this.acc.drive;
+        } else {
+          this.vel.drive = 0;
+        }
       } else {
-        this.vel.drive = this.speed.drive;
+        if ( this.vel.drive < this.speed.drive ) {
+          this.vel.drive += this.acc.drive;
+        } else {
+          this.vel.drive = this.speed.drive;
+        }
       }
+
     } else if ( this.moving.drive === -1 ) {
-      if ( this.vel.drive > 0 ) {
-        this.vel.drive -= this.acc.drive;
+      if ( this.movingDir.drive === 1 ) {
+        if ( this.vel.drive > 0 ) {
+          this.vel.drive -= this.acc.drive;
+        } else {
+          this.vel.drive = 0;
+        }
       } else {
-        this.vel.drive = 0;
+        if ( this.vel.drive > -this.speed.drive ) {
+          this.vel.drive -= this.acc.drive;
+        } else {
+          this.vel.drive = -this.speed.drive;
+        }
       }
     } else {
 
@@ -58,21 +82,43 @@ export default class Spacecraft {
   }
 
   turn(press: number) {
+    if ( press === 0 ) {
+      if ( this.vel.turn > 0 ) this.movingDir.turn = 1;
+      else if ( this.vel.turn < 0 ) this.movingDir.turn = -1;
+      else this.movingDir.turn = 0;
+    }
     this.moving.turn = press;
   }
 
   turning() {
     if ( this.moving.turn === 1 ) {
-      if ( this.vel.turn < this.speed.turn ) {
-        this.vel.turn += this.acc.turn;
+      if ( this.movingDir.turn === -1 ) {
+        if ( this.vel.turn < 0 ) {
+          this.vel.turn += this.acc.turn;
+        } else {
+          this.vel.turn = 0;
+        }
       } else {
-        this.vel.turn = this.speed.turn;
+        if ( this.vel.turn < this.speed.turn ) {
+          this.vel.turn += this.acc.turn;
+        } else {
+          this.vel.turn = this.speed.turn;
+        }
       }
+
     } else if ( this.moving.turn === -1 ) {
-      if ( this.vel.turn > -this.speed.turn ) {
-        this.vel.turn -= this.acc.turn;
+      if ( this.movingDir.turn === 1 ) {
+        if ( this.vel.turn > 0 ) {
+          this.vel.turn -= this.acc.turn;
+        } else {
+          this.vel.turn = 0;
+        }
       } else {
-        this.vel.turn = -this.speed.turn;
+        if ( this.vel.turn > -this.speed.turn ) {
+          this.vel.turn -= this.acc.turn;
+        } else {
+          this.vel.turn = -this.speed.turn;
+        }
       }
     } else {
 
@@ -95,6 +141,6 @@ export default class Spacecraft {
       this.dir -= 360;
     }
 
-    console.log(this.vel.drive, this.vel.turn, this.dir);
+    console.log(this.movingDir.drive, this.vel.drive);
   }
 }
