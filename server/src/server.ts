@@ -25,10 +25,19 @@ class App {
     }) 
 
     this.io.on('connection', client => {
-      console.log(`User connected id: ${client.id}`);
       client.on('hello', (payload:any) => this.sayHello(client, payload));
       client.on('keyEvent', (payload: any) => this.keyEvent(client, payload));
       client.on('mouseEvent', (payload: any) => this.mouseEvent(client, payload));
+      client.on('disconnect', () => {
+        for (const channelIndex in this.state.channels) {
+          for (const ship of this.state.channels[channelIndex].spacecrafts) {
+            if ( ship.id === client.id ) {
+              this.state.channels[channelIndex].removeSpacecraft(client.id);
+              break;
+            }
+          }
+        }
+      }) 
     });
 
     this.gameInterval = setInterval(() => {
@@ -49,7 +58,7 @@ class App {
 
   keyEvent(client: any, payload: any) {
     const channel = this.state.channels[0];
-    const target = channel.spacecrafts.find(ship=> ship.username === payload.username);
+    const target = channel.spacecrafts.find(ship=> ship.id === payload.id);
 
     if ( payload.eventName === 'keydown' ) {
       if ( payload.code === 'KeyW' ) target?.accelate(1);
@@ -68,7 +77,7 @@ class App {
   }
 
   mouseEvent(client: any, payload: any) {
-    const target = this.state.channels[0].spacecrafts.find(ship=> ship.username === payload.username);
+    const target = this.state.channels[0].spacecrafts.find(ship=> ship.id === payload.id);
 
     if ( payload.eventName === 'mousemove' ) {
       target?.cannon.turn(payload.mouse.x, payload.mouse.y, payload.center.x, payload.center.y);
@@ -76,13 +85,13 @@ class App {
   }
 
   sayHello(client: any, payload: any) {
-    const newPlayer = new Spacecraft(payload.username);
+    const newPlayer = new Spacecraft(client.id, payload.username);
     const connectingChannel = this.state.channels[0].channel;
     client.join(connectingChannel);
     const channel = this.state.channels.find(ch => ch.channel === connectingChannel);
     channel?.createNewSpacecraft(newPlayer);
     console.log(`${payload.username}(${client.id}) 유저가 ${connectingChannel} 채널에 입장했습니다.`, payload);
-    console.log(this.state.channels)
+    this.io.emit('createdUser', newPlayer);
   }
 }
 

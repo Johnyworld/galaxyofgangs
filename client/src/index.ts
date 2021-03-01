@@ -32,13 +32,13 @@ class Socket {
 
 
 class KeyEvent {
-  constructor(username: string, socket: Socket) {
+  constructor(id: string, socket: Socket) {
     ['keydown', 'keyup'].forEach(eventName => {
       window.addEventListener(eventName, (e:any) => {
         if ( ['KeyA', 'KeyS', 'KeyD', 'KeyW', 'Space'].includes(e.code) ) {
           e.preventDefault();
           console.log(e.code);
-          socket.emit('keyEvent', { username, eventName, code: e.code });
+          socket.emit('keyEvent', { id, eventName, code: e.code });
         }
       })
     })
@@ -48,11 +48,11 @@ class KeyEvent {
 
 class MouseEvent {
   center: Vec2;
-  constructor(username: string, socket: Socket, canvas: HTMLCanvasElement) {
+  constructor(id: string, socket: Socket, canvas: HTMLCanvasElement) {
     this.center = { x: canvas.width/2, y: canvas.height/2 };
     ['mousemove'].forEach(eventName => {
       window.addEventListener(eventName, (e: any) => {
-        socket.emit('mouseEvent', { username, eventName, mouse: { x: e.clientX, y: e.clientY }, center: this.center });
+        socket.emit('mouseEvent', { id, eventName, mouse: { x: e.clientX, y: e.clientY }, center: this.center });
       })
     })
   }
@@ -64,10 +64,10 @@ class MouseEvent {
 
 
 class App {
-  myShip: string;
+  player: Spacecraft | null;
   socket: Socket;
-  keyEvent: KeyEvent;
-  mouseEvent: MouseEvent;
+  keyEvent?: KeyEvent;
+  mouseEvent?: MouseEvent;
   state: State;
   canvas: HTMLCanvasElement;
   camera: Vec2;
@@ -80,7 +80,7 @@ class App {
     this.ctx = <CanvasRenderingContext2D> this.canvas.getContext('2d');
     this.ctx.imageSmoothingEnabled = false;
 
-    this.myShip = 'Johny Kim'
+    this.player = null;
     this.socket = new Socket();
     this.isLoaded = false;
 
@@ -90,14 +90,12 @@ class App {
     };
     this.camera = { x: 0, y: 0 };
 
-    this.socket.emit('hello', { username: this.myShip });
-    this.keyEvent = new KeyEvent(this.myShip, this.socket);
-    this.mouseEvent = new MouseEvent(this.myShip, this.socket, this.canvas);
-
+    this.socket.emit('hello', { username: 'Johny Kim' });
 
     this.resize();
 
     this.socket.on('gameState', (state: State) => this.update(state));
+    this.socket.on('createdUser', (ship: Spacecraft) => this.addPlayer(ship));
 
     this.image = new Image();
     this.image.onload = () => {
@@ -108,78 +106,94 @@ class App {
     window.addEventListener('resize', this.resize.bind(this));
   }
 
+  addEvents() {
+    if ( this.player ) {
+      this.keyEvent = new KeyEvent(this.player.id, this.socket);
+      this.mouseEvent = new MouseEvent(this.player.id, this.socket, this.canvas);
+    }
+  }
+
   resize() {
     this.canvas.width = document.body.clientWidth;
     this.canvas.height = document.body.clientHeight;
-    this.mouseEvent.setCenterPosition(this.canvas);
+    this.mouseEvent && this.mouseEvent.setCenterPosition(this.canvas);
   }
 
-  drawUI(ship: Spacecraft) {
-    this.ctx.font = `italic 900 ${UI_FONT_NORMAL}px Roboto`;
-    this.ctx.textBaseline = 'hanging';
-    this.ctx.textAlign = 'start';
-    const arr = [
-      {
-        name: 'HP',
-        value: ship.status.hp,
-        max: ship.status.hpMax,
-      }, {
-        name: 'FUEL',
-        value: ship.status.fuel,
-        max: ship.status.fuelMax,
+  addPlayer(ship: Spacecraft) {
+    if ( !this.player ) {
+      this.player = ship;
+      this.addEvents();
+    }
+  }
+
+  drawUI() {
+    if ( this.player ) {
+
+      this.ctx.font = `italic 900 ${UI_FONT_NORMAL}px Roboto`;
+      this.ctx.textBaseline = 'hanging';
+      this.ctx.textAlign = 'start';
+      const arr = [
+        {
+          name: 'HP',
+          value: this.player.status.hp,
+          max: this.player.status.hpMax,
+        }, {
+          name: 'FUEL',
+          value: this.player.status.fuel,
+          max: this.player.status.fuelMax,
+        }
+      ];
+      for (let i=0; i<arr.length; i++) {
+        const itemBaseLine = UI_BASELINE + UI_FONT_NORMAL*i + UI_GAP*i
+        this.ctx.save();
+        this.ctx.fillStyle = UI_FONT_COLOR;
+        this.ctx.fillText(arr[i].name, UI_BASELINE, itemBaseLine + 2 );
+        this.ctx.fillText(arr[i].max.toString(), UI_BASELINE + 80 + arr[i].max, itemBaseLine + 2 );
+        this.ctx.transform(1, 0, -0.5, 1, i*UI_FONT_NORMAL, 0);
+        this.ctx.fillStyle = '#1e1e1e';
+        this.ctx.fillRect(UI_BASELINE + 80, itemBaseLine, arr[i].max, 16);
+        this.ctx.fillStyle = UI_FONT_COLOR;
+        this.ctx.fillRect(UI_BASELINE + 80, itemBaseLine, arr[i].value, 16);
+        this.ctx.restore();
       }
-    ];
-    for (let i=0; i<arr.length; i++) {
-      const itemBaseLine = UI_BASELINE + UI_FONT_NORMAL*i + UI_GAP*i
-      this.ctx.save();
+  
+      this.ctx.textAlign = 'center';
       this.ctx.fillStyle = UI_FONT_COLOR;
-      this.ctx.fillText(arr[i].name, UI_BASELINE, itemBaseLine + 2 );
-      this.ctx.fillText(arr[i].max.toString(), UI_BASELINE + 80 + arr[i].max, itemBaseLine + 2 );
-      this.ctx.transform(1, 0, -0.5, 1, i*UI_FONT_NORMAL, 0);
+      const dirFloor = Math.floor(this.player.dir);
+      const dir = dirFloor < 10 ? `00${dirFloor}` : dirFloor < 100 ? `0${dirFloor}` : `${dirFloor}`;
+      this.ctx.fillText(dir, this.canvas.width/2, UI_BASELINE + 2 );
+  
+      const barSize = 100;
+  
+      const barGap = 2;
       this.ctx.fillStyle = '#1e1e1e';
-      this.ctx.fillRect(UI_BASELINE + 80, itemBaseLine, arr[i].max, 16);
-      this.ctx.fillStyle = UI_FONT_COLOR;
-      this.ctx.fillRect(UI_BASELINE + 80, itemBaseLine, arr[i].value, 16);
-      this.ctx.restore();
-    }
-
-    this.ctx.textAlign = 'center';
-    this.ctx.fillStyle = UI_FONT_COLOR;
-    const dirFloor = Math.floor(ship.dir);
-    const dir = dirFloor < 10 ? `00${dirFloor}` : dirFloor < 100 ? `0${dirFloor}` : `${dirFloor}`;
-    this.ctx.fillText(dir, this.canvas.width/2, UI_BASELINE + 2 );
-
-    const barSize = 100;
-
-    const barGap = 2;
-    this.ctx.fillStyle = '#1e1e1e';
-    this.ctx.save();
-    this.ctx.transform(1, 0, 0.5, 1, -UI_FONT_NORMAL, 0);
-    this.ctx.fillRect(this.canvas.width/2 - barSize - UI_GAP - 20, UI_BASELINE, barSize, UI_FONT_NORMAL);
-    this.ctx.restore();
-    this.ctx.save();
-    this.ctx.transform(1, 0, -0.5, 1, UI_FONT_NORMAL, 0);
-    this.ctx.fillRect(this.canvas.width/2 + UI_GAP + 20, UI_BASELINE, barSize, UI_FONT_NORMAL);
-    this.ctx.restore();
-
-    const turnPower = ship.vel.turn < 0 ? Math.ceil(-ship.vel.turn) : Math.ceil(ship.vel.turn);
-
-    for ( let i=0; i<turnPower; i++ ) {
       this.ctx.save();
-      this.ctx.fillStyle = UI_FONT_COLOR;
-      if ( ship.vel.turn < 0 ) {
-        this.ctx.transform(1, 0, 0.5, 1, -UI_FONT_NORMAL, 0);
-        this.ctx.fillRect(this.canvas.width/2 - barSize/10*(i+1) - UI_GAP - 20, UI_BASELINE, barSize/10-barGap, UI_FONT_NORMAL);
-      } else {
-        this.ctx.transform(1, 0, -0.5, 1, UI_FONT_NORMAL, 0);
-        this.ctx.fillRect(this.canvas.width/2 + barSize/10*i + UI_GAP + 20, UI_BASELINE, barSize/10-barGap, UI_FONT_NORMAL);
-      }
+      this.ctx.transform(1, 0, 0.5, 1, -UI_FONT_NORMAL, 0);
+      this.ctx.fillRect(this.canvas.width/2 - barSize - UI_GAP - 20, UI_BASELINE, barSize, UI_FONT_NORMAL);
       this.ctx.restore();
+      this.ctx.save();
+      this.ctx.transform(1, 0, -0.5, 1, UI_FONT_NORMAL, 0);
+      this.ctx.fillRect(this.canvas.width/2 + UI_GAP + 20, UI_BASELINE, barSize, UI_FONT_NORMAL);
+      this.ctx.restore();
+  
+      const turnPower = this.player.vel.turn < 0 ? Math.ceil(-this.player.vel.turn) : Math.ceil(this.player.vel.turn);
+  
+      for ( let i=0; i<turnPower; i++ ) {
+        this.ctx.save();
+        this.ctx.fillStyle = UI_FONT_COLOR;
+        if ( this.player.vel.turn < 0 ) {
+          this.ctx.transform(1, 0, 0.5, 1, -UI_FONT_NORMAL, 0);
+          this.ctx.fillRect(this.canvas.width/2 - barSize/10*(i+1) - UI_GAP - 20, UI_BASELINE, barSize/10-barGap, UI_FONT_NORMAL);
+        } else {
+          this.ctx.transform(1, 0, -0.5, 1, UI_FONT_NORMAL, 0);
+          this.ctx.fillRect(this.canvas.width/2 + barSize/10*i + UI_GAP + 20, UI_BASELINE, barSize/10-barGap, UI_FONT_NORMAL);
+        }
+        this.ctx.restore();
+      }
+  
+      this.ctx.fillStyle = UI_FONT_COLOR;
+      this.ctx.fillRect(this.canvas.width/2, UI_BASELINE * 3, this.player.vel.drive*10, 2);
     }
-
-    this.ctx.fillStyle = UI_FONT_COLOR;
-    this.ctx.fillRect(this.canvas.width/2, UI_BASELINE * 3, ship.vel.drive*10, 2);
-
   }
 
 
@@ -194,17 +208,18 @@ class App {
   }
 
   update(state: State) {
-    if ( this.isLoaded ) {
+    if ( this.isLoaded && this.player ) {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       this.ctx.fillStyle = 'red';
 
       this.drawBackground();
 
       for ( const ship of state.spacecrafts ) {
-        if ( ship.username === this.myShip ) {
+        if ( ship.id === this.player.id ) {
+          this.player = ship;
           this.camera.x = ship.pos.x - this.canvas.width / 2 + ship.size.x / 2;
           this.camera.y = ship.pos.y - this.canvas.height / 2 + ship.size.y / 2;
-          this.drawUI(ship);
+          this.drawUI();
         }
         const posX = ship.pos.x - this.camera.x;
         const posY = ship.pos.y - this.camera.y;

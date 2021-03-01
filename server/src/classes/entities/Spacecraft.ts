@@ -12,6 +12,7 @@ interface Status {
 }
 
 export default class Spacecraft {
+  id: string;
   username: string;
   size: Vec2;
   pos: Vec2;
@@ -23,7 +24,8 @@ export default class Spacecraft {
   dir: number;
   status: Status;
   cannon: Cannon;
-  constructor(username: string) {
+  constructor(id: string, username: string) {
+    this.id = id;
     this.username = username;
     this.size = new Vec2(96, 96);
     this.pos = new Vec2(200, 500);

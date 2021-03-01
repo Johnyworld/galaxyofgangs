@@ -24,11 +24,15 @@ export default class Channel {
   }
 
   removeCannonBall(id: number) {
-    this.cannonBalls = this.cannonBalls.filter(ball=> ball.id !== id);
+    this.cannonBalls = this.cannonBalls.filter(ball => ball.id !== id);
   }
 
   createNewSpacecraft(spacecraft: Spacecraft) {
-    const isExists = this.spacecrafts.find(s=> s.username === spacecraft.username);
+    const isExists = this.spacecrafts.find(s=> s.id === spacecraft.id);
     if ( !isExists ) this.spacecrafts.push(spacecraft);
+  }
+
+  removeSpacecraft(id: string) {
+    this.spacecrafts = this.spacecrafts.filter(ship => ship.id !== id);
   }
 }
