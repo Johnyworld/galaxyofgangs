@@ -1,5 +1,6 @@
 import { getLocationFromRangeAndAngle } from "../../utils/trigonometric";
 import Dir3 from "../Dir3";
+import Channel from "../states/Channel";
 import Vec2 from "../Vec2";
 import Cannon from "./Cannon";
 
@@ -127,6 +128,10 @@ export default class Spacecraft {
         }
       }
     }
+  }
+
+  fire(channel: Channel) {
+    this.cannon.fire(channel, this.dir, this.vel.drive);
   }
 
   update() {

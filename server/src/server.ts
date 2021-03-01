@@ -38,7 +38,6 @@ class App {
         }
         for ( const cannonBall of channel.cannonBalls ) {
           if ( cannonBall.distance <= 0 ) {
-            console.log('===== server', cannonBall.id, channel.cannonBalls);  
             channel.removeCannonBall(cannonBall.id);
           }
           cannonBall.update();
@@ -57,7 +56,7 @@ class App {
       if ( payload.code === 'KeyS' ) target?.accelate(-1);
       if ( payload.code === 'KeyA' ) target?.turn(-1);
       if ( payload.code === 'KeyD' ) target?.turn(1);
-      if ( payload.code === 'Space' ) target?.cannon.fire(channel);
+      if ( payload.code === 'Space' ) target?.fire(channel);
     }
 
     if ( payload.eventName === 'keyup' ) {

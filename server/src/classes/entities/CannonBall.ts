@@ -11,7 +11,9 @@ export default class CannonBall {
   speed: number;
   power: number;
   distance: number;
-  constructor( x: number, y: number, dir: number, speed: number, power: number, distance: number) {
+  shipDir: number;
+  shipDrive: number;
+  constructor( x: number, y: number, dir: number, speed: number, power: number, distance: number, shipDir: number, shipDrive: number) {
     this.id = cannonBallId;
     cannonBallId++;
     this.pos = new Vec2(x, y);
@@ -20,16 +22,19 @@ export default class CannonBall {
     this.speed = speed;
     this.power = power;
     this.distance = distance;
+    this.shipDir = shipDir;
+    this.shipDrive = shipDrive;
   }
 
   update() {
     if ( this.distance > 0 ) {
       this.distance -= 1;
 
+      const shipLocation = getLocationFromRangeAndAngle(this.shipDir, this.shipDrive);
       const location = getLocationFromRangeAndAngle(this.dir, this.speed);
   
-      this.pos.x += location.x;
-      this.pos.y += location.y;
+      this.pos.x += location.x + shipLocation.x;
+      this.pos.y += location.y + shipLocation.y;
     }
   }
 }

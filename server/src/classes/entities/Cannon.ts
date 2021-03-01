@@ -19,10 +19,10 @@ export default class Cannon {
     this.dir = getRangeAndAngleFromLocation( centerX, centerY, mouseX, mouseY).angle;
   }
 
-  fire(channel: Channel) {
+  fire(channel: Channel, shipDir: number, shipDrive: number) {
     const centerX = this.pos.x + this.size.x / 2;
     const centerY = this.pos.y + this.size.y / 2;
-    channel.createNewCannonBall(centerX, centerY, this.dir, 8, 2, 80);
+    channel.createNewCannonBall(centerX, centerY, this.dir, 8, 2, 80, shipDir, shipDrive);
   }
 
   update(shipPosX: number, shipPosY: number) {
