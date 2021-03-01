@@ -29,7 +29,13 @@ declare module 'state' {
     cannon: Cannon;
   }
 
+  interface CannonBall {
+    pos: Vec2;
+    size: Vec2;
+  }
+
   export interface State {
     spacecrafts: Spacecraft[];
+    cannonBalls: CannonBall[];
   }
 }

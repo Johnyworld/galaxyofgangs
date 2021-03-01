@@ -1,8 +1,7 @@
-import { timeStamp } from "console";
 import { getLocationFromRangeAndAngle } from "../../utils/trigonometric";
 import Dir3 from "../Dir3";
 import Vec2 from "../Vec2";
-import Cannon from "./patials/Cannon";
+import Cannon from "./Cannon";
 
 interface Status {
   hp: number;

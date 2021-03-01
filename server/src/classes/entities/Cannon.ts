@@ -1,5 +1,7 @@
-import { getRangeAndAngleFromLocation } from "../../../utils/trigonometric";
-import Vec2 from "../../Vec2";
+import { getRangeAndAngleFromLocation } from "../../utils/trigonometric";
+import Channel from "../states/Channel";
+import Vec2 from "../Vec2";
+
 
 export default class Cannon {
   size: Vec2;
@@ -20,6 +22,12 @@ export default class Cannon {
       mouseX,
       mouseY
     ).angle;
+  }
+
+  fire(channel: Channel) {
+    const centerX = this.pos.x + this.size.x / 2;
+    const centerY = this.pos.y + this.size.y / 2;
+    channel.createNewCannonBall(centerX, centerY, this.dir, 8, 2, 80);
   }
 
   update(shipPosX: number, shipPosY: number) {

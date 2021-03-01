@@ -2,7 +2,7 @@ import * as socketio from 'socket.io';
 import Spacecraft from './classes/entities/Spacecraft';
 import State from './classes/states/State';
 
-const FRAME_RATE = 30;
+const FRAME_RATE = 60;
 
 class App {
   io: socketio.Server;
@@ -36,19 +36,28 @@ class App {
         for ( const ship of channel.spacecrafts ) {
           ship.update();
         }
+        for ( const cannonBall of channel.cannonBalls ) {
+          if ( cannonBall.distance <= 0 ) {
+            console.log('===== server', cannonBall.id, channel.cannonBalls);  
+            channel.removeCannonBall(cannonBall.id);
+          }
+          cannonBall.update();
+        }
         this.io.in(channel.channel.toString()).emit('gameState', channel);
       }
     }, 1000 / FRAME_RATE);
   }
 
   keyEvent(client: any, payload: any) {
-    const target = this.state.channels[0].spacecrafts.find(ship=> ship.username === payload.username);
+    const channel = this.state.channels[0];
+    const target = channel.spacecrafts.find(ship=> ship.username === payload.username);
 
     if ( payload.eventName === 'keydown' ) {
       if ( payload.code === 'KeyW' ) target?.accelate(1);
       if ( payload.code === 'KeyS' ) target?.accelate(-1);
       if ( payload.code === 'KeyA' ) target?.turn(-1);
       if ( payload.code === 'KeyD' ) target?.turn(1);
+      if ( payload.code === 'Space' ) target?.cannon.fire(channel);
     }
 
     if ( payload.eventName === 'keyup' ) {

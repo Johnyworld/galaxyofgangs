@@ -111,6 +111,13 @@ class App {
         this.ctx.drawImage(this.image, 96, 0, 96, 96, ship.cannon.pos.x, ship.cannon.pos.y, ship.cannon.size.x, ship.cannon.size.y);
         this.ctx.restore();
       }
+
+      for ( const cannonBall of state.cannonBalls ) {
+        const x = cannonBall.pos.x - cannonBall.size.x / 2;
+        const y = cannonBall.pos.y - cannonBall.size.y / 2;
+        this.ctx.fillStyle = 'black';
+        this.ctx.fillRect(x, y, cannonBall.size.x, cannonBall.size.y);
+      }
     }
   }
 }

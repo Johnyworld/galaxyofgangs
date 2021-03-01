@@ -1,3 +1,4 @@
+import CannonBall from "../entities/CannonBall";
 import Spacecraft from "../entities/Spacecraft";
 
 const channelGernerator: (channels: Channel[]) => string = (channels) => {
@@ -10,10 +11,20 @@ const channelGernerator: (channels: Channel[]) => string = (channels) => {
 export default class Channel {
   channel: string;
   spacecrafts: Spacecraft[];
+  cannonBalls: CannonBall[];
 
   constructor(channels: Channel[]) {
     this.channel = channelGernerator(channels);
     this.spacecrafts = [];
+    this.cannonBalls = [];
+  }
+
+  createNewCannonBall(x: number, y: number, dir: number, speed: number, power: number, distance: number) {
+    this.cannonBalls.push(new CannonBall(x, y, dir, speed, power, distance));
+  }
+
+  removeCannonBall(id: number) {
+    this.cannonBalls = this.cannonBalls.filter(ball=> ball.id !== id);
   }
 
   createNewSpacecraft(spacecraft: Spacecraft) {
