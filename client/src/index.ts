@@ -45,12 +45,18 @@ class KeyEvent {
 
 
 class MouseEvent {
+  center: Vec2;
   constructor(username: string, socket: Socket, canvas: HTMLCanvasElement) {
+    this.center = { x: canvas.width/2, y: canvas.height/2 };
     ['mousemove'].forEach(eventName => {
       window.addEventListener(eventName, (e: any) => {
-        socket.emit('mouseEvent', { username, eventName, mouse: { x: e.clientX, y: e.clientY }, center: { x: canvas.width/2, y: canvas.height/2 }});
+        socket.emit('mouseEvent', { username, eventName, mouse: { x: e.clientX, y: e.clientY }, center: this.center });
       })
     })
+  }
+
+  setCenterPosition(canvas: HTMLCanvasElement) {
+    this.center = { x: canvas.width/2, y: canvas.height/2 };
   }
 }
 
@@ -103,6 +109,7 @@ class App {
   resize() {
     this.canvas.width = document.body.clientWidth;
     this.canvas.height = document.body.clientHeight;
+    this.mouseEvent.setCenterPosition(this.canvas);
   }
 
   drawUI(ship: Spacecraft) {

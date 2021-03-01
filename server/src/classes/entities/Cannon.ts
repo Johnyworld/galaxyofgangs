@@ -16,12 +16,7 @@ export default class Cannon {
   }
 
   turn(mouseX: number, mouseY: number, centerX: number, centerY: number) {
-    this.dir = getRangeAndAngleFromLocation(
-      centerX + this.size.x / 2,
-      centerY + this.size.y / 2,
-      mouseX,
-      mouseY
-    ).angle;
+    this.dir = getRangeAndAngleFromLocation( centerX, centerY, mouseX, mouseY).angle;
   }
 
   fire(channel: Channel) {
