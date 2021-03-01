@@ -115,7 +115,7 @@ class App {
       for ( const cannonBall of state.cannonBalls ) {
         const x = cannonBall.pos.x - cannonBall.size.x / 2;
         const y = cannonBall.pos.y - cannonBall.size.y / 2;
-        this.ctx.fillStyle = 'black';
+        this.ctx.fillStyle = '#fff';
         this.ctx.fillRect(x, y, cannonBall.size.x, cannonBall.size.y);
       }
     }
