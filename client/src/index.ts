@@ -1,4 +1,4 @@
-import { Spacecraft, State } from 'state';
+import { Spacecraft, State, Vec2 } from 'state';
 
 
 const UI_BASELINE = 20;
@@ -45,10 +45,10 @@ class KeyEvent {
 
 
 class MouseEvent {
-  constructor(username: string, socket: Socket) {
+  constructor(username: string, socket: Socket, canvas: HTMLCanvasElement) {
     ['mousemove'].forEach(eventName => {
       window.addEventListener(eventName, (e: any) => {
-        socket.emit('mouseEvent', { username, eventName, mouse: { x: e.clientX, y: e.clientY }});
+        socket.emit('mouseEvent', { username, eventName, mouse: { x: e.clientX, y: e.clientY }, center: { x: canvas.width/2, y: canvas.height/2 }});
       })
     })
   }
@@ -62,10 +62,16 @@ class App {
   mouseEvent: MouseEvent;
   state: State;
   canvas: HTMLCanvasElement;
+  camera: Vec2;
   ctx: CanvasRenderingContext2D;
   image: HTMLImageElement;
   isLoaded: boolean;
   constructor() {
+
+    this.canvas = <HTMLCanvasElement> document.getElementById('canvas');
+    this.ctx = <CanvasRenderingContext2D> this.canvas.getContext('2d');
+    this.ctx.imageSmoothingEnabled = false;
+
     this.myShip = 'Johny Kim'
     this.socket = new Socket();
     this.isLoaded = false;
@@ -74,14 +80,12 @@ class App {
       spacecrafts: [],
       cannonBalls: [],
     };
+    this.camera = { x: 0, y: 0 };
 
     this.socket.emit('hello', { username: this.myShip });
     this.keyEvent = new KeyEvent(this.myShip, this.socket);
-    this.mouseEvent = new MouseEvent(this.myShip, this.socket);
+    this.mouseEvent = new MouseEvent(this.myShip, this.socket, this.canvas);
 
-    this.canvas = <HTMLCanvasElement> document.getElementById('canvas');
-    this.ctx = <CanvasRenderingContext2D> this.canvas.getContext('2d');
-    this.ctx.imageSmoothingEnabled = false;
 
     this.resize();
 
@@ -169,36 +173,48 @@ class App {
 
   }
 
+
+  drawBackground() {
+    for ( let i=0; i<this.canvas.width/50; i++ ) {
+
+    }
+  }
+
   update(state: State) {
     if ( this.isLoaded ) {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       this.ctx.fillStyle = 'red';
 
+      this.drawBackground();
+
       for ( const ship of state.spacecrafts ) {
         if ( ship.username === this.myShip ) {
+          this.camera.x = ship.pos.x - this.canvas.width / 2 + ship.size.x / 2;
+          this.camera.y = ship.pos.y - this.canvas.height / 2 + ship.size.y / 2;
           this.drawUI(ship);
         }
-        const centerX = ship.pos.x + ship.size.x / 2;
-        const centerY = ship.pos.y + ship.size.y / 2;
-        // this.ctx.fillRect(ship.pos.x, ship.pos.y, 50, 50);
+        const posX = ship.pos.x - this.camera.x;
+        const posY = ship.pos.y - this.camera.y;
+        const centerX = posX + ship.size.x / 2;
+        const centerY = posY + ship.size.y / 2;
         this.ctx.save();
         this.ctx.translate(centerX, centerY);
         this.ctx.rotate(ship.dir * Math.PI / 180);
         this.ctx.translate(-centerX, -centerY);
-        this.ctx.drawImage(this.image, 0, 0, 96, 96, ship.pos.x, ship.pos.y, ship.size.x, ship.size.y);
+        this.ctx.drawImage(this.image, 0, 0, 96, 96, posX, posY, ship.size.x, ship.size.y);
         this.ctx.restore();
 
         this.ctx.save();
         this.ctx.translate(centerX, centerY);
         this.ctx.rotate(ship.cannon.dir * Math.PI / 180);
         this.ctx.translate(-centerX, -centerY);
-        this.ctx.drawImage(this.image, 96, 0, 96, 96, ship.cannon.pos.x, ship.cannon.pos.y, ship.cannon.size.x, ship.cannon.size.y);
+        this.ctx.drawImage(this.image, 96, 0, 96, 96, ship.cannon.pos.x - this.camera.x, ship.cannon.pos.y - this.camera.y, ship.cannon.size.x, ship.cannon.size.y);
         this.ctx.restore();
       }
 
       for ( const cannonBall of state.cannonBalls ) {
-        const x = cannonBall.pos.x - cannonBall.size.x / 2;
-        const y = cannonBall.pos.y - cannonBall.size.y / 2;
+        const x = cannonBall.pos.x - cannonBall.size.x / 2 - this.camera.x;
+        const y = cannonBall.pos.y - cannonBall.size.y / 2 - this.camera.y;
         this.ctx.fillStyle = '#fff';
         this.ctx.fillRect(x, y, cannonBall.size.x, cannonBall.size.y);
       }

@@ -15,10 +15,10 @@ export default class Cannon {
     this.dir = 0;
   }
 
-  turn(mouseX: number, mouseY: number) {
+  turn(mouseX: number, mouseY: number, centerX: number, centerY: number) {
     this.dir = getRangeAndAngleFromLocation(
-      this.pos.x + this.size.x / 2,
-      this.pos.y + this.size.y / 2,
+      centerX + this.size.x / 2,
+      centerY + this.size.y / 2,
       mouseX,
       mouseY
     ).angle;

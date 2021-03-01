@@ -72,7 +72,7 @@ class App {
     const target = this.state.channels[0].spacecrafts.find(ship=> ship.username === payload.username);
 
     if ( payload.eventName === 'mousemove' ) {
-      target?.cannon.turn(payload.mouse.x, payload.mouse.y);
+      target?.cannon.turn(payload.mouse.x, payload.mouse.y, payload.center.x, payload.center.y);
     }
   }
 
