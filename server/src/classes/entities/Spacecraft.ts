@@ -35,9 +35,9 @@ export default class Spacecraft {
     this.cannon = new Cannon(this.pos.x, this.pos.y);
     this.status = {
       hp: 100,
-      hpMax: 100,
-      fuel: 100,
-      fuelMax: 100,
+      hpMax: 120,
+      fuel: 50,
+      fuelMax: 80,
     }
   }
 
@@ -95,14 +95,16 @@ export default class Spacecraft {
   turning() {
     if ( this.moving.turn === 1 ) {
       if ( this.movingDir.turn === -1 ) {
-        if ( this.vel.turn < 0 ) {
-          this.vel.turn += this.acc.turn;
+        const result = this.vel.turn + this.acc.turn;
+        if ( result < 0 ) {
+          this.vel.turn = result;
         } else {
           this.vel.turn = 0;
         }
       } else {
-        if ( this.vel.turn < this.speed.turn ) {
-          this.vel.turn += this.acc.turn;
+        const result = this.vel.turn + this.acc.turn;
+        if ( result < this.speed.turn ) {
+          this.vel.turn = result;
         } else {
           this.vel.turn = this.speed.turn;
         }
@@ -110,14 +112,16 @@ export default class Spacecraft {
 
     } else if ( this.moving.turn === -1 ) {
       if ( this.movingDir.turn === 1 ) {
-        if ( this.vel.turn > 0 ) {
-          this.vel.turn -= this.acc.turn;
+        const result = this.vel.turn - this.acc.turn;
+        if ( result > 0 ) {
+          this.vel.turn = result;
         } else {
           this.vel.turn = 0;
         }
       } else {
-        if ( this.vel.turn > -this.speed.turn ) {
-          this.vel.turn -= this.acc.turn;
+        const result = this.vel.turn - this.acc.turn;
+        if ( result > -this.speed.turn ) {
+          this.vel.turn = result 
         } else {
           this.vel.turn = -this.speed.turn;
         }
@@ -130,7 +134,7 @@ export default class Spacecraft {
     this.accelating();
     this.turning();
 
-    this.dir += this.vel.turn / 8;
+    this.dir += this.vel.turn / 4;
 
     if ( this.dir < 0 ) {
       this.dir += 360;

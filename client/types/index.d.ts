@@ -6,6 +6,11 @@ declare module 'state' {
     y: number;
   }
 
+  interface Dir2 {
+    drive: number;
+    turn: number;
+  }
+
   interface Status {
     hp: number;
     hpMax: number;
@@ -23,7 +28,7 @@ declare module 'state' {
     username: string;
     size: Vec2;
     pos: Vec2;
-    vel: Vec2;
+    vel: Dir2;
     dir: number;
     status: Status;
     cannon: Cannon;
