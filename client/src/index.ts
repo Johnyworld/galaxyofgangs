@@ -6,6 +6,8 @@ const UI_GAP = 16;
 const UI_FONT_NORMAL = 16;
 const UI_FONT_SMALL = 12;
 const UI_FONT_COLOR = '#0090ff';
+const BG_GRID_SIZE = 200;
+const BG_GRID_COLOR = '#222';
 
 
 class Socket {
@@ -182,8 +184,12 @@ class App {
 
 
   drawBackground() {
-    for ( let i=0; i<this.canvas.width/50; i++ ) {
-
+    this.ctx.fillStyle = BG_GRID_COLOR;
+    for ( let i=0; i<this.canvas.width/BG_GRID_SIZE + 1; i++ ) {
+      this.ctx.fillRect(-(this.camera.x % BG_GRID_SIZE) + i * BG_GRID_SIZE, 0, 1, this.canvas.height);
+    }
+    for ( let i=0; i<this.canvas.height/BG_GRID_SIZE + 1; i++ ) {
+      this.ctx.fillRect(0, -(this.camera.y % BG_GRID_SIZE) + i * BG_GRID_SIZE, this.canvas.width, 1);
     }
   }
 
