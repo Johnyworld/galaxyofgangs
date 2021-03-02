@@ -4,8 +4,9 @@ import { Spacecraft, State, Vec2 } from 'state';
 const UI_BASELINE = 20;
 const UI_GAP = 16;
 const UI_FONT_NORMAL = 16;
-const UI_FONT_SMALL = 12;
+const UI_FONT_SMALL = 13;
 const UI_FONT_COLOR = '#0090ff';
+const UI_FONT_COLOR_GRAY = '#888';
 const BG_GRID_SIZE = 200;
 const BG_GRID_COLOR = '#222';
 
@@ -90,7 +91,7 @@ class App {
     };
     this.camera = { x: 0, y: 0 };
 
-    this.socket.emit('hello', { username: 'Johny Kim' });
+    this.socket.emit('hello', { username: 'Player' });
 
     this.resize();
 
@@ -210,7 +211,6 @@ class App {
   update(state: State) {
     if ( this.isLoaded && this.player ) {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-      this.ctx.fillStyle = 'red';
 
       this.drawBackground();
 
@@ -225,6 +225,11 @@ class App {
         const posY = ship.pos.y - this.camera.y;
         const centerX = posX + ship.size.x / 2;
         const centerY = posY + ship.size.y / 2;
+
+        this.ctx.font = `400 ${UI_FONT_SMALL}px Roboto`;
+        this.ctx.fillStyle = UI_FONT_COLOR_GRAY;
+        this.ctx.fillText(ship.username, centerX, posY -  UI_GAP);
+
         this.ctx.save();
         this.ctx.translate(centerX, centerY);
         this.ctx.rotate(ship.dir * Math.PI / 180);

@@ -3,6 +3,7 @@ import Spacecraft from './classes/entities/Spacecraft';
 import State from './classes/states/State';
 
 const FRAME_RATE = 60;
+let playerNum = 1;
 
 class App {
   io: socketio.Server;
@@ -85,7 +86,8 @@ class App {
   }
 
   sayHello(client: any, payload: any) {
-    const newPlayer = new Spacecraft(client.id, payload.username);
+    const newPlayer = new Spacecraft(client.id, payload.username + ' ' + playerNum);
+    playerNum++;
     const connectingChannel = this.state.channels[0].channel;
     client.join(connectingChannel);
     const channel = this.state.channels.find(ch => ch.channel === connectingChannel);
