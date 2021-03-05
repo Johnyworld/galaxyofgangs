@@ -44,9 +44,34 @@ class App {
     this.gameInterval = setInterval(() => {
       for ( const channel of this.state.channels ) {
         for ( const ship of channel.spacecrafts ) {
+          if ( ship.status.hp < 0 ) {
+            channel.removeSpacecraft(ship.id);
+          }
           ship.update();
+          // for ( const otherShip of channel.spacecrafts ) {
+          //   if ( otherShip.id !== ship.id ) {
+          //     const left = otherShip.pos.x < ship.pos.x + ship.size.x;
+          //     const top = otherShip.pos.y < ship.pos.y + ship.size.y;
+          //     const right = otherShip.pos.x + otherShip.size.x > ship.pos.x;
+          //     const bottom = otherShip.pos.y + otherShip.size.y > ship.pos.y;
+          //     if ( left && top && right && bottom ) {
+          //     }
+          //   }
+          // }
         }
         for ( const cannonBall of channel.cannonBalls ) {
+          for ( const ship of channel.spacecrafts ) {
+            if ( cannonBall.shipId !== ship.id ) {
+              const left = ship.pos.x < cannonBall.pos.x + cannonBall.size.x;
+              const top = ship.pos.y < cannonBall.pos.y + cannonBall.size.y;
+              const right = ship.pos.x + ship.size.x > cannonBall.pos.x;
+              const bottom = ship.pos.y + ship.size.y > cannonBall.pos.y;
+              if ( left && top && right && bottom ) {
+                ship.hit(cannonBall.dir, cannonBall.speed, cannonBall.power);
+                channel.removeCannonBall(cannonBall.id);
+              }
+            }
+          }
           if ( cannonBall.distance <= 0 ) {
             channel.removeCannonBall(cannonBall.id);
           }

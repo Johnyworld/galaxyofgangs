@@ -28,7 +28,7 @@ export default class Spacecraft {
     this.id = id;
     this.username = username;
     this.size = new Vec2(96, 96);
-    this.pos = new Vec2(200, 500);
+    this.pos = new Vec2(Math.random() * 1000, Math.random() * 1000);
     this.vel = new Dir3(0, 0);
     this.acc =  new Dir3(0.1, 0.1);
     this.speed = new Dir3(10, 10);
@@ -133,7 +133,11 @@ export default class Spacecraft {
   }
 
   fire(channel: Channel) {
-    this.cannon.fire(channel, this.dir, this.vel.drive);
+    this.cannon.fire(channel, this.id, this.dir, this.vel.drive);
+  }
+
+  hit(cannonDir: number, cannonDrive: number, cannonPow: number) {
+    this.status.hp -= cannonPow;
   }
 
   update() {

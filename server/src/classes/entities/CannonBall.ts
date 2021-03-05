@@ -5,6 +5,7 @@ let cannonBallId = 1;
 
 export default class CannonBall {
   id: number;
+  shipId: string;
   pos: Vec2;
   size: Vec2;
   dir: number;
@@ -13,8 +14,9 @@ export default class CannonBall {
   distance: number;
   shipDir: number;
   shipDrive: number;
-  constructor( x: number, y: number, dir: number, speed: number, power: number, distance: number, shipDir: number, shipDrive: number) {
+  constructor( x: number, y: number, dir: number, speed: number, power: number, distance: number, shipId: string, shipDir: number, shipDrive: number) {
     this.id = cannonBallId;
+    this.shipId = shipId;
     cannonBallId++;
     this.pos = new Vec2(x, y);
     this.size = new Vec2(4, 4);

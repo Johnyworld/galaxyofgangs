@@ -19,8 +19,8 @@ export default class Channel {
     this.cannonBalls = [];
   }
 
-  createNewCannonBall(x: number, y: number, dir: number, speed: number, power: number, distance: number, shipDir: number, shipDrive: number) {
-    this.cannonBalls.push(new CannonBall(x, y, dir, speed, power, distance, shipDir, shipDrive));
+  createNewCannonBall(x: number, y: number, dir: number, speed: number, power: number, distance: number, shipId: string, shipDir: number, shipDrive: number) {
+    this.cannonBalls.push(new CannonBall(x, y, dir, speed, power, distance, shipId, shipDir, shipDrive));
   }
 
   removeCannonBall(id: number) {
