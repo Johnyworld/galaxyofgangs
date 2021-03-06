@@ -149,7 +149,7 @@ class App {
         this.ctx.save();
         this.ctx.fillStyle = UI_FONT_COLOR;
         this.ctx.fillText(arr[i].name, UI_BASELINE, itemBaseLine + 2 );
-        this.ctx.fillText(arr[i].max.toString(), UI_BASELINE + 80 + arr[i].max, itemBaseLine + 2 );
+        this.ctx.fillText(`${Math.ceil(arr[i].value)}/${arr[i].max}`, UI_BASELINE + 80 + arr[i].max, itemBaseLine + 2 );
         this.ctx.transform(1, 0, -0.5, 1, i*UI_FONT_NORMAL, 0);
         this.ctx.fillStyle = '#1e1e1e';
         this.ctx.fillRect(UI_BASELINE + 80, itemBaseLine, arr[i].max, 16);
