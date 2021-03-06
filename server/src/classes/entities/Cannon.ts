@@ -8,11 +8,17 @@ export default class Cannon {
   pos: Vec2;
   posInShip: Vec2;
   dir: number; 
+  accuracy: number;
+  delay: number;
+  firing: boolean;
   constructor(shipPosX: number, shipPosY: number) {
     this.size = new Vec2(96, 96);
     this.posInShip = new Vec2(0, 0);
     this.pos = new Vec2(shipPosX + this.posInShip.x, shipPosY + this.posInShip.y);
     this.dir = 0;
+    this.accuracy = 10;
+    this.delay = 800;
+    this.firing = false;
   }
 
   turn(mouseX: number, mouseY: number, centerX: number, centerY: number) {
@@ -20,9 +26,16 @@ export default class Cannon {
   }
 
   fire(channel: Channel, shipId: string, shipDir: number, shipDrive: number) {
-    const centerX = this.pos.x + this.size.x / 2;
-    const centerY = this.pos.y + this.size.y / 2;
-    channel.createNewCannonBall(centerX, centerY, this.dir, 8, 20, 80, shipId, shipDir, shipDrive);
+    if ( !this.firing ) {
+      this.firing = true;
+      const centerX = this.pos.x + this.size.x / 2;
+      const centerY = this.pos.y + this.size.y / 2;
+      const spread = Math.random() * this.accuracy - this.accuracy / 2
+      channel.createNewCannonBall(centerX, centerY, this.dir + spread, 8, 20, 80, shipId, shipDir, shipDrive);
+      setTimeout(() => {
+        this.firing = false;
+      }, this.delay)
+    }
   }
 
   update(shipPosX: number, shipPosY: number) {
