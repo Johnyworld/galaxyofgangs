@@ -69,6 +69,7 @@ class App {
               if ( left && top && right && bottom ) {
                 ship.hit(cannonBall.dir, cannonBall.speed, cannonBall.power);
                 channel.removeCannonBall(cannonBall.id);
+                channel.createHits(cannonBall.pos.x, cannonBall.pos.y, cannonBall.power);
               }
             }
           }
@@ -77,6 +78,14 @@ class App {
           }
           cannonBall.update();
         }
+
+        for ( const hit of channel.hits ) {
+          if ( !hit.show ) {
+            channel.removeHits(hit.id);
+          }
+          hit.update();
+        }
+
         this.io.in(channel.channel.toString()).emit('gameState', channel);
       }
     }, 1000 / FRAME_RATE);

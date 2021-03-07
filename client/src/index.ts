@@ -251,6 +251,14 @@ class App {
         this.ctx.fillStyle = '#fff';
         this.ctx.fillRect(x, y, cannonBall.size.x, cannonBall.size.y);
       }
+
+      for ( const hit of state.hits ) {
+        const x = hit.pos.x - this.camera.x;
+        const y = hit.pos.y - this.camera.y;
+        this.ctx.fillStyle = '#ff4411';
+        this.ctx.font = `400 ${UI_FONT_NORMAL}px Roboto`;
+        this.ctx.fillText(hit.damage.toString(), x, y);
+      }
     }
   }
 }

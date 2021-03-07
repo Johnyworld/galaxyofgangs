@@ -40,8 +40,14 @@ declare module 'state' {
     size: Vec2;
   }
 
+  interface Hit {
+    pos: Vec2;
+    damage: number;
+  }
+
   export interface State {
     spacecrafts: Spacecraft[];
     cannonBalls: CannonBall[];
+    hits: Hit[];
   }
 }
