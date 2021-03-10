@@ -1,4 +1,5 @@
 import { Spacecraft, State, Vec2 } from 'state';
+import { loadImage } from './loaders';
 
 
 const UI_BASELINE = 20;
@@ -73,8 +74,10 @@ class App {
   canvas: HTMLCanvasElement;
   camera: Vec2;
   ctx: CanvasRenderingContext2D;
-  image: HTMLImageElement;
-  isLoaded: boolean;
+  images: {
+    background: HTMLImageElement;
+    spacecrafts: HTMLImageElement;
+  } | null;
   constructor() {
 
     this.canvas = <HTMLCanvasElement> document.getElementById('canvas');
@@ -82,29 +85,48 @@ class App {
     this.ctx.imageSmoothingEnabled = false;
 
     this.player = null;
+    this.images = null;
     this.socket = new Socket();
-    this.isLoaded = false;
 
     this.state = {
       spacecrafts: [],
       cannonBalls: [],
+      hits: [],
     };
+
     this.camera = { x: 0, y: 0 };
 
     this.socket.emit('hello', { username: 'Player' });
 
     this.resize();
+    this.loadImages();
 
     this.socket.on('gameState', (state: State) => this.update(state));
     this.socket.on('createdUser', (ship: Spacecraft) => this.addPlayer(ship));
 
-    this.image = new Image();
-    this.image.onload = () => {
-      this.isLoaded = true;
-    }
-    this.image.src = '/assets/spacecraft.png';
-
     window.addEventListener('resize', this.resize.bind(this));
+  }
+
+  loadImage(url: string): Promise<HTMLImageElement> {
+    return new Promise(resolve => {
+      const image = new Image();
+      image.onload = () => {
+        resolve(image);
+      }
+      image.src = url;
+    }) 
+  }
+
+  loadImages() {
+    Promise.all([
+      this.loadImage('/assets/spacecraft.png'),
+      this.loadImage('/assets/bg01.png'),
+    ]).then(([ spacecraftImage, bg01Image ]) => {
+      this.images = {
+        spacecrafts: spacecraftImage,
+        background: bg01Image,
+      }
+    })
   }
 
   addEvents() {
@@ -209,7 +231,7 @@ class App {
   }
 
   update(state: State) {
-    if ( this.isLoaded && this.player ) {
+    if ( this.images && this.player ) {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
       this.drawBackground();
@@ -234,14 +256,14 @@ class App {
         this.ctx.translate(centerX, centerY);
         this.ctx.rotate(ship.dir * Math.PI / 180);
         this.ctx.translate(-centerX, -centerY);
-        this.ctx.drawImage(this.image, 0, 0, 96, 96, posX, posY, ship.size.x, ship.size.y);
+        this.ctx.drawImage(this.images.spacecrafts, 0, 0, 96, 96, posX, posY, ship.size.x, ship.size.y);
         this.ctx.restore();
 
         this.ctx.save();
         this.ctx.translate(centerX, centerY);
         this.ctx.rotate(ship.cannon.dir * Math.PI / 180);
         this.ctx.translate(-centerX, -centerY);
-        this.ctx.drawImage(this.image, 96, 0, 96, 96, ship.cannon.pos.x - this.camera.x, ship.cannon.pos.y - this.camera.y, ship.cannon.size.x, ship.cannon.size.y);
+        this.ctx.drawImage(this.images.spacecrafts, 96, 0, 96, 96, ship.cannon.pos.x - this.camera.x, ship.cannon.pos.y - this.camera.y, ship.cannon.size.x, ship.cannon.size.y);
         this.ctx.restore();
       }
 
