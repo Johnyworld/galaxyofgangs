@@ -1,5 +1,5 @@
 import { Spacecraft, State, Vec2 } from 'state';
-import { loadImage } from './loaders';
+import { coverSizing } from './utils.js';
 
 
 const UI_BASELINE = 20;
@@ -227,6 +227,15 @@ class App {
     }
     for ( let i=0; i<this.canvas.height/BG_GRID_SIZE + 1; i++ ) {
       this.ctx.fillRect(0, -(this.camera.y % BG_GRID_SIZE) + i * BG_GRID_SIZE, this.canvas.width, 1);
+    }
+
+    if ( this.images ) {
+      const newImage = coverSizing(this.canvas.width, this.canvas.height, this.images.background.width, this.images.background.height);
+      this.ctx.drawImage(
+        this.images.background,
+        0, 0, this.images.background.width, this.images.background.height,
+        newImage.x, newImage.y, newImage.width, newImage.height,
+      );
     }
   }
 
