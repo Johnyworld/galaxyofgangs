@@ -25,7 +25,7 @@ socket.io와 canvas를 이용한 간단한(?) 게임을 제작.
 ### UI
 - [x] 우주선 HP / FUEL
 - [x] 우주선 현재 방향, 추진력
-- [ ] 좌표
+- [x] 좌표
 - [ ] 미니맵
 
 ### Spacecrafts

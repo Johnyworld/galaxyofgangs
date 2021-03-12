@@ -154,7 +154,13 @@ class App {
 
       this.ctx.font = `italic 900 ${UI_FONT_NORMAL}px Roboto`;
       this.ctx.textBaseline = 'hanging';
+
+      this.ctx.fillStyle = UI_FONT_COLOR;
+      this.ctx.textAlign = 'end';
+      this.ctx.fillText(`${this.player.pos.x.toFixed(3)}, ${this.player.pos.y.toFixed(3)}`, this.canvas.width - UI_BASELINE, UI_BASELINE);
+
       this.ctx.textAlign = 'start';
+
       const arr = [
         {
           name: 'HP',
