@@ -10,6 +10,9 @@ const UI_FONT_COLOR = '#0090ff';
 const UI_FONT_COLOR_GRAY = '#888';
 const BG_GRID_SIZE = 200;
 const BG_GRID_COLOR = '#222';
+const BG_LAYER_1 = 1;
+const BG_LAYER_2 = 2;
+const BG_LAYER_3 = 10;
 
 
 class Socket {
@@ -226,6 +229,53 @@ class App {
   }
 
 
+  drawBackgroundImage(image: HTMLImageElement, layerLevel: number, player: Spacecraft) {
+    const newImage = coverSizing(this.canvas.width, this.canvas.height, image.width, image.height);
+
+    // 배경이 몇번 반복되는지 값 (0 -> 1 -> 2 -> 3 ...)
+    const xx = -(Math.floor((newImage.x - player.pos.x / layerLevel) / newImage.width) + 1); 
+    const yy = -(Math.floor((newImage.y - player.pos.y / layerLevel) / newImage.height) + 1);
+
+    // 음수 보정
+    const xxx = xx < 0 ? xx+1 : xx;
+    const yyy = yy < 0 ? yy+1 : yy;
+    const secondSignX = xx < 0 ? -1 : 1;
+    const secondSignY = yy < 0 ? -1 : 1;
+
+    // 배경 그림의 베이스 위치
+    const baseX = newImage.x - player.pos.x / layerLevel;
+    const baseY = newImage.y - player.pos.y / layerLevel;
+
+    // 베이스 + 반복 값 - 1칸씩 이동할 때 마다 새로운 배경을 미리 갱신
+    const x1 = baseX + newImage.width * (xxx + xxx%2);
+    const y1 = baseY + newImage.height * (yyy + yyy%2);
+    const x2 = baseX + newImage.width * (xxx - xxx%2 + secondSignX);
+    const y2 = baseY + newImage.height * (yyy - yyy%2 + secondSignY);
+
+    this.ctx.drawImage(
+      image,
+      0, 0, image.width, image.height,
+      x2, y1, newImage.width, newImage.height,
+    );
+    this.ctx.drawImage(
+      image,
+      0, 0, image.width, image.height,
+      x1, y2, newImage.width, newImage.height,
+    );
+    this.ctx.drawImage(
+      image,
+      0, 0, image.width, image.height,
+      x2, y2, newImage.width, newImage.height,
+    );
+    this.ctx.drawImage(
+      image,
+      0, 0, image.width, image.height,
+      x1, y1, newImage.width, newImage.height,
+    );
+    
+  }
+
+
   drawBackground() {
     this.ctx.fillStyle = BG_GRID_COLOR;
     for ( let i=0; i<this.canvas.width/BG_GRID_SIZE + 1; i++ ) {
@@ -235,14 +285,12 @@ class App {
       this.ctx.fillRect(0, -(this.camera.y % BG_GRID_SIZE) + i * BG_GRID_SIZE, this.canvas.width, 1);
     }
 
-    if ( this.images ) {
-      const newImage = coverSizing(this.canvas.width, this.canvas.height, this.images.background.width, this.images.background.height);
-      this.ctx.drawImage(
-        this.images.background,
-        0, 0, this.images.background.width, this.images.background.height,
-        newImage.x, newImage.y, newImage.width, newImage.height,
-      );
+    if ( this.images && this.player ) {
+      this.drawBackgroundImage(this.images.background, BG_LAYER_1, this.player);
+      this.drawBackgroundImage(this.images.background, BG_LAYER_2, this.player);
+      this.drawBackgroundImage(this.images.background, BG_LAYER_3, this.player);
     }
+    
   }
 
   update(state: State) {
