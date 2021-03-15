@@ -277,13 +277,13 @@ class App {
 
 
   drawBackground() {
-    this.ctx.fillStyle = BG_GRID_COLOR;
-    for ( let i=0; i<this.canvas.width/BG_GRID_SIZE + 1; i++ ) {
-      this.ctx.fillRect(-(this.camera.x % BG_GRID_SIZE) + i * BG_GRID_SIZE, 0, 1, this.canvas.height);
-    }
-    for ( let i=0; i<this.canvas.height/BG_GRID_SIZE + 1; i++ ) {
-      this.ctx.fillRect(0, -(this.camera.y % BG_GRID_SIZE) + i * BG_GRID_SIZE, this.canvas.width, 1);
-    }
+    // this.ctx.fillStyle = BG_GRID_COLOR;
+    // for ( let i=0; i<this.canvas.width/BG_GRID_SIZE + 1; i++ ) {
+    //   this.ctx.fillRect(-(this.camera.x % BG_GRID_SIZE) + i * BG_GRID_SIZE, 0, 1, this.canvas.height);
+    // }
+    // for ( let i=0; i<this.canvas.height/BG_GRID_SIZE + 1; i++ ) {
+    //   this.ctx.fillRect(0, -(this.camera.y % BG_GRID_SIZE) + i * BG_GRID_SIZE, this.canvas.width, 1);
+    // }
 
     if ( this.images && this.player ) {
       this.drawBackgroundImage(this.images.background, BG_LAYER_1, this.player);
