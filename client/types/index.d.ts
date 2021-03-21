@@ -43,6 +43,8 @@ declare module 'state' {
   interface Hit {
     pos: Vec2;
     damage: number;
+    animate: number;
+    animateMax: number;
   }
 
   export interface State {

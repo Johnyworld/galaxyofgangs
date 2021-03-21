@@ -80,6 +80,7 @@ class App {
   images: {
     background: HTMLImageElement;
     spacecrafts: HTMLImageElement;
+    boomSprites: HTMLImageElement;
   } | null;
   constructor() {
 
@@ -124,10 +125,12 @@ class App {
     Promise.all([
       this.loadImage('/assets/spacecraft.png'),
       this.loadImage('/assets/bg01.png'),
-    ]).then(([ spacecraftImage, bg01Image ]) => {
+      this.loadImage('/assets/boomsprite.png'),
+    ]).then(([ spacecrafts, background, boomSprites ]) => {
       this.images = {
-        spacecrafts: spacecraftImage,
-        background: bg01Image,
+        spacecrafts,
+        background,
+        boomSprites,
       }
     })
   }
@@ -342,7 +345,11 @@ class App {
         const y = hit.pos.y - this.camera.y;
         this.ctx.fillStyle = '#ff4411';
         this.ctx.font = `400 ${UI_FONT_NORMAL}px Roboto`;
-        this.ctx.fillText(hit.damage.toString(), x, y);
+        if ( hit.animate < hit.animateMax ) {
+          this.ctx.drawImage(this.images.boomSprites, 40*hit.animate, 0, 40, 40, x - 20, y - 20, 40, 40);
+        } else {
+          this.ctx.fillText(hit.damage.toString(), x, y);
+        }
       }
     }
   }

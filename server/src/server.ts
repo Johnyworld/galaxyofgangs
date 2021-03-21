@@ -80,7 +80,7 @@ class App {
         }
 
         for ( const hit of channel.hits ) {
-          if ( !hit.show ) {
+          if ( hit.showing > hit.delay ) {
             channel.removeHits(hit.id);
           }
           hit.update();
