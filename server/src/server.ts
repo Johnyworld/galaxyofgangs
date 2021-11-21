@@ -10,10 +10,10 @@ console.log('hello');
 class App {
   io: socketio.Server;
   state: State;
-  port: number;
+  port: number | string;
   gameInterval:NodeJS.Timeout;
   constructor() {
-    this.port = 7000;
+    this.port = process.env.PORT || 7000;
     console.log(`✅ Galaxy of Gangs server listening port ${this.port}`);
 
     this.state = new State();
