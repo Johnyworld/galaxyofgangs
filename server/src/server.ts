@@ -5,6 +5,8 @@ import State from './classes/states/State';
 const FRAME_RATE = 60;
 let playerNum = 1;
 
+console.log('hello');
+
 class App {
   io: socketio.Server;
   state: State;
