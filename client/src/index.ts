@@ -18,7 +18,7 @@ const BG_LAYER_3 = 10;
 class Socket {
   socket: SocketIOClient.Socket;
   constructor() {
-    this.socket = io('http://127.0.0.1:7000/', { autoConnect: false });
+    this.socket = io('https://galaxyofgangs.herokuapp.com/', { autoConnect: false });
     this.connect();
   }
 
