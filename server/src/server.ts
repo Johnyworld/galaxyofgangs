@@ -13,7 +13,7 @@ class App {
   port: number | string;
   gameInterval:NodeJS.Timeout;
   constructor() {
-    this.port = process.env.PORT || 7000;
+    this.port = process.env.PORT ? +process.env.PORT : 7000;
     console.log(`✅ Galaxy of Gangs server listening port ${this.port}`);
 
     this.state = new State();
