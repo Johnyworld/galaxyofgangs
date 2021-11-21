@@ -15,6 +15,8 @@ const BG_LAYER_2 = 2;
 const BG_LAYER_3 = 10;
 
 
+console.log('시작')
+
 class Socket {
   socket: SocketIOClient.Socket;
   constructor() {

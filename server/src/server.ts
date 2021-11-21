@@ -22,8 +22,9 @@ class App {
 
     this.io = new socketio.Server(this.port, {
       cors: {
-        origin: "*",
-        methods: ["GET", "POST"]
+        origin: ['https://galaxyofgangs.herokuapp.com', 'http://127.0.0.1:5000'],
+        methods: ["GET", "POST"],
+        credentials: true
       }
     }) 
 
